@@ -13,13 +13,21 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
+            // Menghubungkan ke tabel categories sesuai struktur database kamu
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-            $table->string('title');
+            
+            // Kolom Nama Event (Sesuaikan dengan CRUD Drive: 'name')
+            $table->string('name'); 
+            
             $table->text('description')->nullable();
             $table->dateTime('date');
             $table->string('location');
+            
+            // Informasi Tiket
             $table->integer('price');
-            $table->integer('stock');
+            $table->integer('capacity'); // Mengganti 'stock' menjadi 'capacity' sesuai materi CRUD
+            $table->integer('sold')->default(0); // Menambahkan kolom tiket terjual
+            
             $table->string('poster_path')->nullable();
             $table->timestamps();
         });
