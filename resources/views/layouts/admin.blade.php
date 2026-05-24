@@ -34,6 +34,10 @@
                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition text-sm font-medium">
                 🏷️ Kategori
             </a>
+            <a href="/admin/partners"
+               class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition text-sm font-medium">
+                🤝 Partner
+            </a>
         </nav>
 
         <div class="mt-auto">
@@ -48,7 +52,7 @@
 
         {{-- Top Bar --}}
         <header class="bg-white shadow-sm px-8 py-4 flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-gray-700">@yield('page-title', 'Dashboard')</h2>
+            <h2 class="text-lg font-semibold text-gray-700">@yield('page_title', 'Dashboard')</h2>
             <div class="flex items-center gap-3">
                 <span class="text-sm text-gray-500">Admin</span>
                 <div class="w-9 h-9 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">A</div>
