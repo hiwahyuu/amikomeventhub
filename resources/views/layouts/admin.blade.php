@@ -18,32 +18,48 @@
         </div>
 
         <nav class="flex flex-col gap-2">
-            <a href="/admin"
+            <a href="{{ route('admin.dashboard') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition text-sm font-medium">
                 📊 Dashboard
             </a>
-            <a href="/admin/events"
+            <a href="{{ route('admin.events.index') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition text-sm font-medium">
                 📅 Manajemen Event
             </a>
-            <a href="/admin/transactions"
+            <a href="{{ route('admin.transactions.index') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition text-sm font-medium">
                 💳 Transaksi
             </a>
-            <a href="/admin/categories"
+            <a href="{{ route('admin.categories.index') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition text-sm font-medium">
                 🏷️ Kategori
             </a>
-            <a href="/admin/partners"
+            <a href="{{ route('admin.partners.index') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition text-sm font-medium">
                 🤝 Partner
             </a>
         </nav>
 
         <div class="mt-auto">
-            <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition text-sm text-indigo-300">
+            <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition text-sm text-indigo-300 mb-2">
                 ← Kembali ke Situs
             </a>
+
+            {{-- Tombol Logout --}}
+            <div class="pt-4 border-t border-indigo-800">
+                <form action="{{ route('admin.logout') }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                        class="w-full flex items-center gap-3 px-4 py-3 text-indigo-300 hover:text-white transition font-medium text-left rounded-lg hover:bg-indigo-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                            </path>
+                        </svg>
+                        Keluar
+                    </button>
+                </form>
+            </div>
         </div>
     </aside>
 
@@ -54,7 +70,7 @@
         <header class="bg-white shadow-sm px-8 py-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-gray-700">@yield('page_title', 'Dashboard')</h2>
             <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-500">Admin</span>
+                <span class="text-sm text-gray-500">{{ auth()->user()->name ?? 'Admin' }}</span>
                 <div class="w-9 h-9 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">A</div>
             </div>
         </header>
