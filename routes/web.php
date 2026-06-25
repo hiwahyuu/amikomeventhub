@@ -3,10 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +24,11 @@ Route::get('/katalog', function () { return view('katalog'); });
 Route::get('/bantuan', function () { return view('bantuan'); });
 
 Route::get('/event/{id}', [EventController::class, 'show'])->name('events.show');
-Route::get('/checkout', [EventController::class, 'checkout'])->name('checkout');
+
+// Route Checkout
+Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
+Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
+
 Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 
 // Redirect /login ke admin login
@@ -72,10 +78,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             'destroy' => 'partners.destroy',
         ]);
 
-        // Transaksi
-        Route::get('/transactions', function () {
-            return view('admin.transactions');
-        })->name('transactions.index');
+        // Transaksi Admin
+        Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
 
     });
 
