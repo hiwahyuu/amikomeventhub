@@ -9,21 +9,18 @@ use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
-    // 1. Menampilkan Semua Data (Read)
     public function index()
     {
         $events = Event::with('category')->get();
         return view('admin.events.index', compact('events'));
     }
 
-    // 2. Menampilkan Form Tambah (Create)
     public function create()
     {
         $categories = Category::all();
         return view('admin.events.create', compact('categories'));
     }
 
-    // 3. Menyimpan Data ke Database + Upload Foto (Store)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -33,19 +30,18 @@ class EventController extends Controller
             'location'    => 'required',
             'price'       => 'required|numeric',
             'capacity'    => 'required|numeric',
-            'poster'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Input name dari form tetap 'image'
         ]);
 
-        if ($request->hasFile('poster')) {
-            $path = $request->file('poster')->store('posters', 'public');
-            $validated['poster_path'] = $path;
+        if ($request->hasFile('image')) {
+            // PERBAIKAN: Simpan ke key 'poster_path' agar sesuai dengan database & Model
+            $validated['poster_path'] = $request->file('image')->store('posters', 'public');
         }
 
         Event::create($validated);
-        return redirect()->route('events.index')->with('success', 'Event berhasil ditambahkan!');
+        return redirect()->route('admin.events.index')->with('success', 'Event berhasil ditambahkan!');
     }
 
-    // ✅ BARU — Menampilkan Detail Event (untuk halaman publik)
     public function show($id)
     {
         $event      = Event::with('category')->findOrFail($id);
@@ -53,14 +49,12 @@ class EventController extends Controller
         return view('events.show', compact('event', 'categories'));
     }
 
-    // 4. Menampilkan Form Edit (Update)
     public function edit(Event $event)
     {
         $categories = Category::all();
         return view('admin.events.edit', compact('event', 'categories'));
     }
 
-    // 5. Memperbarui Data + Update Foto (Update)
     public function update(Request $request, Event $event)
     {
         $validated = $request->validate([
@@ -70,29 +64,31 @@ class EventController extends Controller
             'location'    => 'required',
             'price'       => 'required|numeric',
             'capacity'    => 'required|numeric',
-            'poster'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        if ($request->hasFile('poster')) {
+        if ($request->hasFile('image')) {
+            // PERBAIKAN: Hapus gambar lama menggunakan kolom 'poster_path'
             if ($event->poster_path) {
                 Storage::disk('public')->delete($event->poster_path);
             }
-            $path = $request->file('poster')->store('posters', 'public');
-            $validated['poster_path'] = $path;
+            
+            // PERBAIKAN: Masukkan path gambar baru ke dalam key 'poster_path'
+            $validated['poster_path'] = $request->file('image')->store('posters', 'public');
         }
 
         $event->update($validated);
-        return redirect()->route('events.index')->with('success', 'Event berhasil diperbarui!');
+        return redirect()->route('admin.events.index')->with('success', 'Event berhasil diperbarui!');
     }
 
-    // 6. Menghapus Data (Delete)
     public function destroy(Event $event)
     {
+        // PERBAIKAN: Cek dan hapus gambar menggunakan kolom 'poster_path'
         if ($event->poster_path) {
             Storage::disk('public')->delete($event->poster_path);
         }
 
         $event->delete();
-        return redirect()->route('events.index')->with('success', 'Event berhasil dihapus!');
+        return redirect()->route('admin.events.index')->with('success', 'Event berhasil dihapus!');
     }
 }

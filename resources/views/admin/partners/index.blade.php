@@ -61,10 +61,13 @@
                     <td class="px-4 py-3 text-gray-500">{{ $partner->id }}</td>
                     <td class="px-4 py-3">
                         @if($partner->logo_url)
-                            <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}"
-                                 class="w-10 h-10 object-contain rounded">
+                            {{-- PERBAIKAN DI SINI: w-12 h-12 object-cover rounded-full --}}
+                            <img src="{{ asset('storage/' . $partner->logo_url) }}" alt="{{ $partner->name }}"
+                                 class="w-12 h-12 object-cover rounded-full border border-gray-200 shadow-sm">
                         @else
-                            <span class="text-gray-300 text-xs">No logo</span>
+                            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
+                                <span class="text-gray-400 text-xs">No</span>
+                            </div>
                         @endif
                     </td>
                     <td class="px-4 py-3 font-medium text-gray-800">{{ $partner->name }}</td>

@@ -25,8 +25,8 @@
                         </span>
                     </td>
                     <td class="px-8 py-6">
-                        <p class="font-bold text-slate-800">{{ $trx->customer_name }}</p>
-                        <p class="text-xs text-slate-500">{{ $trx->customer_email }}<br>{{ $trx->customer_phone }}</p>
+                        <p class="font-bold text-slate-800">{{ $trx->name ?? $trx->customer_name ?? $trx->buyer_name ?? 'Tanpa Nama' }}</p>
+                        <p class="text-xs text-slate-500">{{ $trx->email ?? $trx->customer_email ?? '-' }}<br>{{ $trx->phone ?? $trx->customer_phone ?? '' }}</p>
                     </td>
                     <td class="px-8 py-6">
                         <p class="font-medium text-slate-700">{{ $trx->event->name ?? '-' }}</p>

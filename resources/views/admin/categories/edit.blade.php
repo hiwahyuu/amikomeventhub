@@ -22,7 +22,7 @@
                     name="name"
                     value="{{ old('name', $category->name) }}"
                     class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 @error('name') border-red-500 @enderror"
-                >
+                >   
                 @error('name')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror

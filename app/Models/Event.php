@@ -9,25 +9,17 @@ class Event extends Model
 {
     use HasFactory;
 
-    /**
-     * Memberitahu Laravel kolom mana saja yang boleh diisi (Mass Assignment).
-     * Nama-nama kolom ini harus sama persis dengan yang ada di file Migration.
-     */
     protected $fillable = [
-        'category_id',
         'name',
-        'description',
-        'date',
-        'location',
+        'category_id',
         'price',
+        'date',
         'capacity',
-        'sold',
-        'poster_path'
+        'location',
+        'description',
+        'poster_path', 
     ];
 
-    /**
-     * Relasi: Satu Event memiliki satu Kategori.
-     */
     public function category()
     {
         return $this->belongsTo(Category::class);

@@ -25,9 +25,12 @@ Route::get('/bantuan', function () { return view('bantuan'); });
 
 Route::get('/event/{id}', [EventController::class, 'show'])->name('events.show');
 
-// Route Checkout
+// Route Checkout & Pembayaran
 Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
 Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
+Route::get('/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/cancel/{id}', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 
 Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 

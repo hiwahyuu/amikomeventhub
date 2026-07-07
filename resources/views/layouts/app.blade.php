@@ -28,7 +28,7 @@
         </div>
         <div class="hidden md:flex gap-8 font-medium">
             <a href="{{ route('home') }}" class="text-indigo-600">Jelajahi</a>
-            <a href="#" class="hover:text-indigo-600 transition">Kategori</a>
+            {{-- Menu Kategori dihapus agar tampilan lebih bersih --}}
             <a href="#" class="hover:text-indigo-600 transition">Tentang Kami</a>
         </div>
     </nav>

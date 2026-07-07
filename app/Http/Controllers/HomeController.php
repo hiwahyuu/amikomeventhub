@@ -2,24 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
-use App\Models\Partner;
-use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Models\Event;
+use App\Models\Category;
+use App\Models\Partner; // Tambahkan ini agar logo partner di bawah tidak error
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil 6 event terbaru
-        $events = Event::with('category')->latest()->take(6)->get();
+        // 1. Ambil data kategori & partner
+        $categories = Category::all();
+        $partners = Partner::all();
 
-        // Ambil semua partner untuk ditampilkan di homepage
-        $partners = Partner::latest()->get();
+        // 2. KUNCI PERBAIKAN: Ambil event khusus Hero (Jazz Night) secara terpisah
+        // Sehingga gambar di atas tidak akan hilang walau kategorinya di-filter
+        $heroEvent = Event::where('name', 'like', '%Jazz Night%')->first() ?? Event::latest()->first();
 
-        // Ambil semua kategori untuk ditampilkan di homepage
-        $categories = Category::latest()->get();
+        // 3. Logika Filter Event List Berdasarkan URL
+        if ($request->has('category')) {
+            $events = Event::where('category_id', $request->category)->latest()->get();
+            $activeCategory = $request->category; 
+        } else {
+            $events = Event::latest()->get();
+            $activeCategory = 'all'; 
+        }
 
-        return view('welcome', compact('events', 'partners', 'categories'));
+        return view('welcome', compact('events', 'categories', 'activeCategory', 'heroEvent', 'partners'));
     }
 }
