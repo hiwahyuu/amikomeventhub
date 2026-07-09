@@ -1,6 +1,6 @@
 # 🎫 AmikomEventHub
 
-Platform manajemen tiket event berbasis web menggunakan Laravel MVC.
+Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integrasi Payment Gateway Midtrans.
 
 ---
 
@@ -37,18 +37,21 @@ Platform manajemen tiket event berbasis web menggunakan Laravel MVC.
 |----|-------|-------|--------|
 | 1 | Kategori | CRUD lengkap + Search | ✅ Selesai |
 | 2 | Partner | CRUD lengkap + Search | ✅ Selesai |
-| 3 | Public View | Partner & Kategori tampil di homepage | ✅ Selesai |
-| 4 | Authentication | Login & Logout Admin | ✅ Selesai |
-| 5 | Middleware | Proteksi route admin | ✅ Selesai |
-| 6 | Checkout | Guest checkout tanpa login | ✅ Selesai |
-| 7 | Transaksi | Laporan transaksi di panel admin | ✅ Selesai |
-| 8 | Order ID | Generate kode unik TRX-xxx | ✅ Selesai |
+| 3 | Public View | Partner & Kategori tampil dinamis di homepage | ✅ Selesai |
+| 4 | Filter Data | Pemfilteran event berdasarkan kategori (UI/UX dinamis) | ✅ Selesai |
+| 5 | Authentication | Login & Logout Admin | ✅ Selesai |
+| 6 | Middleware | Proteksi route admin | ✅ Selesai |
+| 7 | Checkout | Guest checkout tanpa login | ✅ Selesai |
+| 8 | Transaksi | Laporan transaksi di panel admin | ✅ Selesai |
+| 9 | Order ID | Generate kode unik TRX-xxx | ✅ Selesai |
+| 10 | Payment Gateway | Integrasi Pembayaran Midtrans (Snap Popup) | ✅ Selesai |
+| 11 | State Handling | Penanganan status pembayaran (Success, Pending, Batal) | ✅ Selesai |
 
 ---
 
 ## 🎥 Video Demonstrasi UTS
 
-[Klik untuk menonton](https://youtu.be/k21u-2oewSo)
+[Klik untuk menonton](https://youtu.be/k21u-2oewSo) *(Catatan: Video direkam sebelum pembaruan fitur Midtrans)*
 
 ---
 
@@ -58,7 +61,8 @@ Platform manajemen tiket event berbasis web menggunakan Laravel MVC.
 |-----------|------------|
 | Laravel 11 | Framework PHP |
 | MySQL | Database |
-| Tailwind CSS | Styling |
+| Tailwind CSS | Styling Framework |
+| Midtrans API | Payment Gateway (Sandbox) |
 | Git & GitHub | Version Control |
 
 ---
@@ -67,7 +71,7 @@ Platform manajemen tiket event berbasis web menggunakan Laravel MVC.
 
 ```bash
 # Clone repositori
-git clone https://github.com/hiwahyuu/amikomeventhub.git
+git clone [https://github.com/hiwahyuu/amikomeventhub.git](https://github.com/hiwahyuu/amikomeventhub.git)
 
 # Masuk ke folder
 cd amikomeventhub
@@ -81,6 +85,12 @@ cp .env.example .env
 # Generate key
 php artisan key:generate
 
+# Konfigurasi Midtrans di .env
+# Tambahkan baris ini di file .env Anda dan masukkan Server Key dari Dashboard Sandbox Midtrans
+# MIDTRANS_SERVER_KEY="SB-Mid-server-xxxxxxxxx"
+# MIDTRANS_CLIENT_KEY="SB-Mid-client-xxxxxxxxx"
+# MIDTRANS_IS_PRODUCTION=false
+
 # Jalankan migrasi dan seeder
 php artisan migrate:fresh --seed
 
@@ -89,12 +99,3 @@ php artisan storage:link
 
 # Jalankan server
 php artisan serve
-```
-
----
-
-## 🔑 Akun Admin Default
-
-| Email | Password |
-|-------|----------|
-| admin@amikom.ac.id | password |
