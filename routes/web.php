@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\MidtransWebhookController; // <-- TAMBAHAN BARU
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -32,6 +33,9 @@ Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name(
 Route::get('/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/cancel/{id}', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 
+// Route Webhook Midtrans (HARUS di luar middleware admin/auth) <-- TAMBAHAN BARU
+Route::post('/midtrans/callback', [MidtransWebhookController::class, 'handle']);
+
 Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 
 // Redirect /login ke admin login
@@ -58,8 +62,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Dashboard
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-        // CRUD Event
-        Route::resource('events', EventController::class);
+        // CRUD Event (Diperbaiki agar mengarah ke folder Admin)
+        Route::resource('events', \App\Http\Controllers\Admin\EventController::class);
 
         // CRUD Kategori
         Route::resource('categories', CategoryController::class)->names([
