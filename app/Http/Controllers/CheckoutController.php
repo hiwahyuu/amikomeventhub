@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -90,23 +91,25 @@ class CheckoutController extends Controller
         try {
             $midtransStatus = \Midtrans\Transaction::status($order_id);
             
-            // KONDISI 1: JIKA BENAR-BENAR LUNAS (Berhasil)
             if (in_array($midtransStatus->transaction_status, ['capture', 'settlement'])) {
                 if ($transaction->status !== 'success') {
                     $transaction->update(['status' => 'success']);
                     $transaction->event->decrement('capacity', 1);
                     $transaction->event->increment('sold', 1);
+                    
+                    Mail::raw('Halo ' . $transaction->customer_name . ', Pembayaran tiket untuk event ' . $transaction->event->name . ' telah berhasil! Terima kasih.', function ($message) use ($transaction) {
+                        $message->to($transaction->customer_email)
+                                ->subject('E-Ticket Anda - AmikomEventHub');
+                    });
                 }
                 return view('checkout.success', compact('transaction','categories'));
             } 
-            // KONDISI 2: JIKA MASIH PENDING (Baru dapat nomor VA tapi di-close)
             elseif ($midtransStatus->transaction_status == 'pending') {
-                return redirect()->route('checkout.payment', $order_id)->with('warning', 'Transaksi Anda berstatus PENDING. Silakan selesaikan transfer melalui Virtual Account yang Anda pilih.');
+                return redirect()->route('checkout.payment', $order_id)->with('warning', 'Transaksi Anda berstatus PENDING.');
             } 
-            // KONDISI 3: JIKA GAGAL / EXPIRED
             else {
                 $transaction->update(['status' => 'failed']);
-                return redirect()->route('home')->with('error', 'Pembayaran gagal atau telah kadaluarsa.');
+                return redirect()->route('home')->with('error', 'Pembayaran gagal atau kadaluarsa.');
             }
 
         } catch (\Exception $e) {
@@ -120,7 +123,7 @@ class CheckoutController extends Controller
         $transaction = Transaction::with('event')->where('order_id', $order_id)->firstOrFail();
 
         if ($transaction->status !== 'success') {
-            return redirect()->route('home')->with('error', 'Tiket Anda belum lunas atau dibatalkan.');
+            return redirect()->route('home')->with('error', 'Tiket belum lunas.');
         }
 
         return view('checkout.ticket', compact('transaction', 'categories'));

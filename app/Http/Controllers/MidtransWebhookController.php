@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class MidtransWebhookController extends Controller
 {
@@ -18,19 +19,16 @@ class MidtransWebhookController extends Controller
             return response()->json(['message' => 'Invalid payload'], 400);
         }
 
-        // Mencari ID transaksi tersebut di database lokal kita
         $transaction = Transaction::with('event')->where('order_id', $orderId)->first();
 
         if (!$transaction) {
             return response()->json(['message' => 'Transaction not found'], 404);
         }
 
-        // Cegah proses berulang jika status sudah lunas/sukses
         if ($transaction->status === 'settlement' || $transaction->status === 'success') {
             return response()->json(['message' => 'Already processed']);
         }
 
-        // Logika Penerjemahan Status Midtrans API
         if ($transactionStatus == 'capture') {
             if ($fraudStatus == 'challenge') {
                 $transaction->status = 'challenge';
@@ -53,6 +51,12 @@ class MidtransWebhookController extends Controller
 
     private function processSuccess(Transaction $transaction)
     {
-        // Instruksi lanjutan saat transaksi lunas (pemotongan tiket) akan dibahas pada Modul 13
+        $transaction->event->decrement('capacity', 1);
+        $transaction->event->increment('sold', 1);
+
+        Mail::raw('Halo ' . $transaction->customer_name . ', Pembayaran tiket untuk event ' . $transaction->event->name . ' telah berhasil! Terima kasih.', function ($message) use ($transaction) {
+            $message->to($transaction->customer_email)
+                    ->subject('E-Ticket Anda - AmikomEventHub');
+        });
     }
 }

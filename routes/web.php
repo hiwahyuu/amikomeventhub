@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\MidtransWebhookController; // <-- TAMBAHAN BARU
+use App\Http\Controllers\MidtransWebhookController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -33,12 +33,11 @@ Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name(
 Route::get('/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/cancel/{id}', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 
-// Route Webhook Midtrans (HARUS di luar middleware admin/auth) <-- TAMBAHAN BARU
+// Route Webhook Midtrans
 Route::post('/midtrans/callback', [MidtransWebhookController::class, 'handle']);
 
 Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 
-// Redirect /login ke admin login
 Route::get('/login', function () {
     return redirect()->route('admin.login');
 })->name('login');
@@ -50,44 +49,28 @@ Route::get('/login', function () {
 */
 
 Route::prefix('admin')->name('admin.')->group(function () {
-
-    // Rute Login (bebas akses)
     Route::get('login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.post');
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Rute yang dilindungi Middleware
     Route::middleware(['auth', 'admin'])->group(function () {
-
-        // Dashboard
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-        // CRUD Event (Diperbaiki agar mengarah ke folder Admin)
         Route::resource('events', \App\Http\Controllers\Admin\EventController::class);
-
-        // CRUD Kategori
-        Route::resource('categories', CategoryController::class)->names([
-            'index'   => 'categories.index',
-            'create'  => 'categories.create',
-            'store'   => 'categories.store',
-            'edit'    => 'categories.edit',
-            'update'  => 'categories.update',
-            'destroy' => 'categories.destroy',
-        ]);
-
-        // CRUD Partner
-        Route::resource('partners', PartnerController::class)->names([
-            'index'   => 'partners.index',
-            'create'  => 'partners.create',
-            'store'   => 'partners.store',
-            'edit'    => 'partners.edit',
-            'update'  => 'partners.update',
-            'destroy' => 'partners.destroy',
-        ]);
-
-        // Transaksi Admin
+        Route::resource('categories', CategoryController::class);
+        Route::resource('partners', PartnerController::class);
         Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
-
     });
+});
 
+/*
+|--------------------------------------------------------------------------
+| RUTE TES EMAIL (Jalur Pintas)
+|--------------------------------------------------------------------------
+*/
+Route::get('/test-email', function () {
+    \Illuminate\Support\Facades\Mail::raw('Halo! Ini adalah tes kurir email dari Laravel.', function ($message) {
+        $message->to('tes@amikomeventhub.com')
+                ->subject('Email Percobaan Sukses!');
+    });
+    return 'HORE! Kurir email sudah jalan. Silakan cek file storage/logs/laravel.log sekarang!';
 });
