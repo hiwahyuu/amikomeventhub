@@ -1,6 +1,6 @@
 # 🎫 AmikomEventHub
 
-Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integrasi Payment Gateway Midtrans dan sistem notifikasi otomatis.
+Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integrasi Payment Gateway Midtrans, sistem kupon diskon, ulasan interaktif, dan cetak E-Certificate PDF otomatis.
 
 ---
 
@@ -31,7 +31,7 @@ Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integ
 
 ---
 
-## ✅ Fitur Aplikasi
+## ✅ Fitur Aplikasi (Lengkap + Update UAS)
 
 | No | Modul | Fitur | Status |
 |----|-------|-------|--------|
@@ -39,22 +39,22 @@ Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integ
 | 2 | Partner | CRUD lengkap + Search | ✅ Selesai |
 | 3 | Public View | Partner & Kategori tampil dinamis di homepage | ✅ Selesai |
 | 4 | Filter Data | Pemfilteran event berdasarkan kategori (UI/UX dinamis) | ✅ Selesai |
-| 5 | Authentication | Login & Logout Admin | ✅ Selesai |
-| 6 | Middleware | Proteksi route admin | ✅ Selesai |
-| 7 | Checkout | Guest checkout tanpa login | ✅ Selesai |
-| 8 | Transaksi | Laporan transaksi di panel admin | ✅ Selesai |
-| 9 | Order ID | Generate kode unik TRX-xxx | ✅ Selesai |
-| 10 | Payment Gateway | Integrasi Pembayaran Midtrans (Snap Popup) | ✅ Selesai |
-| 11 | State Handling | Penanganan status pembayaran (Success, Pending, Batal) | ✅ Selesai |
-| 12 | Midtrans Webhook | Update status otomatis dari *background* via API Callback | ✅ Selesai |
-| 13 | Manajemen Kuota | Pemotongan kuota & penambahan tiket terjual otomatis | ✅ Selesai |
-| 14 | Notifikasi Email | Pengiriman E-Ticket otomatis via email (Local Log Mode) | ✅ Selesai |
+| 5 | Authentication | Login & Logout Admin & Multi-Tenant Role | ✅ Selesai |
+| 6 | SSO Google | Login instan menggunakan akun Google (Laravel Socialite) | ✅ Selesai 🔥 |
+| 7 | Middleware | Proteksi route admin & user | ✅ Selesai |
+| 8 | Checkout & Kupon | Sistem kode promo/kupon diskon & Bypass otomatis (Rp 0) | ✅ Selesai 🔥 |
+| 9 | Transaksi & Midtrans | Integrasi Pembayaran Midtrans (Snap Popup) + Webhook | ✅ Selesai |
+| 10 | Rating & Review | Sistem ulasan dan bintang interaktif oleh pembeli | ✅ Selesai 🔥 |
+| 11 | Manajemen Kuota | Pemotongan kuota & penambahan tiket terjual otomatis | ✅ Selesai |
+| 12 | Notifikasi Email | Pengiriman E-Ticket otomatis via email (Local Log Mode) | ✅ Selesai |
+| 13 | E-Certificate PDF | Cetak dan unduh sertifikat partisipasi instan berformat PDF | ✅ Selesai 🔥 |
 
 ---
 
-## 🎥 Video Demonstrasi UTS
+## 🎥 Video Demonstrasi
 
-[Klik untuk menonton](https://youtu.be/k21u-2oewSo) *(Catatan: Video direkam sebelum pembaruan fitur Midtrans & E-Ticket)*
+*   **UTS:** [Tonton Video UTS](https://youtu.be/k21u-2oewSo)
+*   **UAS (Final Version):** *Integrasi Fitur Google SSO, Kupon Diskon, Rating, & E-Certificate PDF.*
 
 ---
 
@@ -66,7 +66,8 @@ Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integ
 | MySQL | Database |
 | Tailwind CSS | Styling Framework |
 | Midtrans API | Payment Gateway (Sandbox) |
-| Ngrok | Localhost Tunneling (untuk Webhook) |
+| Barryvdh DomPDF | Library Pembuatan File PDF Otomatis |
+| Laravel Socialite| Integrasi OAuth Google |
 | Git & GitHub | Version Control |
 
 ---
@@ -97,8 +98,12 @@ php artisan key:generate
 # MIDTRANS_CLIENT_KEY="SB-Mid-client-xxxxxxxxx"
 # MIDTRANS_IS_PRODUCTION=false
 
-# 2. Konfigurasi Email lokal (Bypass blokir jaringan)
-# Ubah MAIL_MAILER menjadi log
+# 2. Konfigurasi Google SSO (Laravel Socialite)
+# GOOGLE_CLIENT_ID="xxxx.apps.googleusercontent.com"
+# GOOGLE_CLIENT_SECRET="xxxx"
+# GOOGLE_REDIRECT_URI="[http://127.0.0.1:8000/auth/google/callback](http://127.0.0.1:8000/auth/google/callback)"
+
+# 3. Konfigurasi Email lokal (Bypass blokir jaringan)
 # MAIL_MAILER=log
 # --------------------------------------------------
 
@@ -108,7 +113,7 @@ php artisan config:clear
 # Jalankan migrasi dan seeder
 php artisan migrate:fresh --seed
 
-# Storage link
+# Storage link (Penting untuk akses poster & asset)
 php artisan storage:link
 
 # Jalankan server
