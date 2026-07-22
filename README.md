@@ -1,6 +1,6 @@
 # 🎫 AmikomEventHub
 
-Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integrasi Payment Gateway Midtrans.
+Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integrasi Payment Gateway Midtrans dan sistem notifikasi otomatis.
 
 ---
 
@@ -46,12 +46,15 @@ Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integ
 | 9 | Order ID | Generate kode unik TRX-xxx | ✅ Selesai |
 | 10 | Payment Gateway | Integrasi Pembayaran Midtrans (Snap Popup) | ✅ Selesai |
 | 11 | State Handling | Penanganan status pembayaran (Success, Pending, Batal) | ✅ Selesai |
+| 12 | Midtrans Webhook | Update status otomatis dari *background* via API Callback | ✅ Selesai |
+| 13 | Manajemen Kuota | Pemotongan kuota & penambahan tiket terjual otomatis | ✅ Selesai |
+| 14 | Notifikasi Email | Pengiriman E-Ticket otomatis via email (Local Log Mode) | ✅ Selesai |
 
 ---
 
 ## 🎥 Video Demonstrasi UTS
 
-[Klik untuk menonton](https://youtu.be/k21u-2oewSo) *(Catatan: Video direkam sebelum pembaruan fitur Midtrans)*
+[Klik untuk menonton](https://youtu.be/k21u-2oewSo) *(Catatan: Video direkam sebelum pembaruan fitur Midtrans & E-Ticket)*
 
 ---
 
@@ -63,6 +66,7 @@ Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integ
 | MySQL | Database |
 | Tailwind CSS | Styling Framework |
 | Midtrans API | Payment Gateway (Sandbox) |
+| Ngrok | Localhost Tunneling (untuk Webhook) |
 | Git & GitHub | Version Control |
 
 ---
@@ -85,11 +89,21 @@ cp .env.example .env
 # Generate key
 php artisan key:generate
 
-# Konfigurasi Midtrans di .env
-# Tambahkan baris ini di file .env Anda dan masukkan Server Key dari Dashboard Sandbox Midtrans
+# --------------------------------------------------
+# KONFIGURASI PENTING DI FILE .ENV
+# --------------------------------------------------
+# 1. Konfigurasi Midtrans (Dapatkan dari Dashboard Sandbox Midtrans)
 # MIDTRANS_SERVER_KEY="SB-Mid-server-xxxxxxxxx"
 # MIDTRANS_CLIENT_KEY="SB-Mid-client-xxxxxxxxx"
 # MIDTRANS_IS_PRODUCTION=false
+
+# 2. Konfigurasi Email lokal (Bypass blokir jaringan)
+# Ubah MAIL_MAILER menjadi log
+# MAIL_MAILER=log
+# --------------------------------------------------
+
+# Bersihkan cache konfigurasi setelah mengubah .env
+php artisan config:clear
 
 # Jalankan migrasi dan seeder
 php artisan migrate:fresh --seed
