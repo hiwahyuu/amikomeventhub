@@ -60,6 +60,16 @@
                 Masuk
             </button>
         </form>
+
+        {{-- Tombol Login Google SSO --}}
+        <div class="mt-4 text-center">
+            <a href="{{ route('google.login') }}" class="w-full py-4 bg-red-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-red-100 hover:bg-red-700 transition flex items-center justify-center gap-3" style="text-decoration: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-google" viewBox="0 0 16 16">
+                  <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-7.481h-2.722v-2.9h5.515z"/>
+                </svg>
+                <span>Masuk dengan Google</span>
+            </a>
+        </div>
     </div>
 
 </body>

@@ -5,6 +5,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MidtransWebhookController;
+use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -32,11 +34,26 @@ Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('ch
 Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/cancel/{id}', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
+// Fitur Baru: Download Sertifikat
+Route::get('/checkout/{order_id}/certificate', [CheckoutController::class, 'downloadCertificate'])->name('checkout.certificate');
 
 // Route Webhook Midtrans
 Route::post('/midtrans/callback', [MidtransWebhookController::class, 'handle']);
 
 Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
+
+// ==========================================
+// FITUR UAS: SSO GOOGLE LOGIN
+// ==========================================
+Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+// ==========================================
+
+// ==========================================
+// FITUR UAS: RATING & REVIEW
+// ==========================================
+Route::post('/events/{id}/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
+// ==========================================
 
 Route::get('/login', function () {
     return redirect()->route('admin.login');

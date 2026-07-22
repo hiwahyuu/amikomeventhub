@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Transaction;
+use App\Models\Promo; // <-- Model Promo
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf; // <-- Tambahan Library PDF
 
 class CheckoutController extends Controller
 {
@@ -22,10 +24,12 @@ class CheckoutController extends Controller
     {
         $event = Event::findOrFail($id);
 
+        // 1. Tambahkan validasi untuk promo_code
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
+            'promo_code' => 'nullable|string' // Boleh kosong
         ]);
 
         if ($event->capacity <= 0) {
@@ -33,8 +37,63 @@ class CheckoutController extends Controller
         }
 
         $orderId = 'TRX-' . time() . '-' . Str::random(5);
+        
+        // 2. Hitung harga awal
         $totalPrice = $event->price + 5000; 
+        $appliedPromo = null;
 
+        // 3. Pengecekan Kode Promo
+        if ($request->filled('promo_code')) {
+            $promo = Promo::where('code', $request->promo_code)->first();
+
+            if (!$promo) {
+                return back()->with('error', 'Kode promo tidak valid atau tidak ditemukan!')->withInput();
+            } elseif ($promo->quota <= 0) {
+                return back()->with('error', 'Mohon maaf, kuota kode promo ini sudah habis!')->withInput();
+            }
+
+            // Kurangi harga total dengan jumlah diskon
+            $totalPrice = $totalPrice - $promo->discount_amount;
+            $appliedPromo = $promo;
+        }
+
+        // Pastikan harga tidak minus (kalau diskon lebih besar dari harga tiket)
+        if ($totalPrice < 0) {
+            $totalPrice = 0;
+        }
+
+        // 4. LOGIKA BYPASS JIKA HARGA TIKET MENJADI GRATIS (Rp 0)
+        if ($totalPrice == 0) {
+            $transaction = Transaction::create([
+                'event_id' => $event->id,
+                'order_id' => $orderId,
+                'customer_name' => $request->customer_name,
+                'customer_email' => $request->customer_email,
+                'customer_phone' => $request->customer_phone,
+                'total_price' => 0,
+                'status' => 'success', // LANGSUNG SUKSES TANPA MIDTRANS!
+            ]);
+
+            // Kurangi kapasitas tiket & tambah tiket terjual
+            $event->decrement('capacity', 1);
+            $event->increment('sold', 1);
+
+            // Kurangi kuota promo jika dipakai
+            if ($appliedPromo) {
+                $appliedPromo->decrement('quota', 1);
+            }
+
+            // Kirim Email Tiket
+            Mail::raw('Halo ' . $transaction->customer_name . ', Tiket GRATIS untuk event ' . $transaction->event->name . ' telah berhasil diklaim! Terima kasih.', function ($message) use ($transaction) {
+                $message->to($transaction->customer_email)
+                        ->subject('E-Ticket Anda - AmikomEventHub');
+            });
+
+            // Langsung lempar ke halaman sukses
+            return redirect()->route('checkout.success', $transaction->order_id)->with('success', 'Tiket gratis berhasil diklaim!');
+        }
+
+        // 5. JIKA HARGA MASIH ADA (> Rp 0), LANJUT KE MIDTRANS SEPERTI BIASA
         $transaction = Transaction::create([
             'event_id' => $event->id,
             'order_id' => $orderId,
@@ -44,6 +103,11 @@ class CheckoutController extends Controller
             'total_price' => $totalPrice,
             'status' => 'Pending', 
         ]);
+
+        // Kurangi kuota promo (sudah di-booking oleh transaksi ini)
+        if ($appliedPromo) {
+            $appliedPromo->decrement('quota', 1);
+        }
 
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production'); 
@@ -84,6 +148,11 @@ class CheckoutController extends Controller
     {
         $categories = \App\Models\Category::all();
         $transaction = Transaction::with('event')->where('order_id', $order_id)->firstOrFail();
+
+        // Jika statusnya sudah success (dari bypass tiket gratis tadi), tidak perlu cek midtrans lagi
+        if ($transaction->status === 'success') {
+            return view('checkout.success', compact('transaction','categories'));
+        }
 
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production');
@@ -136,5 +205,27 @@ class CheckoutController extends Controller
             $transaction->update(['status' => 'failed']);
         }
         return redirect('/')->with('error', 'Pembayaran dibatalkan.');
+    }
+
+    // ==========================================
+    // FITUR UAS: CETAK SERTIFIKAT PDF
+    // ==========================================
+    public function downloadCertificate($order_id)
+    {
+        $transaction = Transaction::with('event')->where('order_id', $order_id)->firstOrFail();
+
+        // Pastikan tiket sudah lunas/sukses sebelum bisa download sertifikat
+        if ($transaction->status !== 'success') {
+            return redirect()->back()->with('error', 'Sertifikat belum tersedia karena pembayaran belum selesai.');
+        }
+
+        // Memanggil tampilan desain sertifikat
+        $pdf = Pdf::loadView('certificate.pdf', compact('transaction'));
+        
+        // Mengatur ukuran kertas menjadi A4 Memanjang (Landscape)
+        $pdf->setPaper('A4', 'landscape');
+
+        // Mengunduh file dengan nama otomatis
+        return $pdf->download('Sertifikat-' . str_replace(' ', '-', $transaction->customer_name) . '.pdf');
     }
 }

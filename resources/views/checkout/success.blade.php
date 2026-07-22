@@ -24,6 +24,11 @@
             <p class="font-black text-indigo-600">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</p>
         </div>
 
+        {{-- TOMBOL UNDUH SERTIFIKAT (FITUR BARU) --}}
+        <a href="{{ route('checkout.certificate', $transaction->order_id) }}" class="block w-full bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all hover:-translate-y-1 mb-3">
+             Unduh E-Certificate (PDF)
+        </a>
+
         <a href="{{ route('home') }}" class="block w-full bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-slate-200 hover:bg-slate-900 transition-all hover:-translate-y-1">
             Kembali ke Beranda
         </a>

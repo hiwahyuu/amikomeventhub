@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
+            // Menambahkan organizer_id untuk mengikat event dengan penyelenggaranya
+            $table->foreignId('organizer_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();

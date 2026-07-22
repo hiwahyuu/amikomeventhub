@@ -8,21 +8,30 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Akun Admin
+        // 1. Akun Superadmin (Admin Utama)
         \App\Models\User::create([
-            'name'     => 'Admin Amikom',
+            'name'     => 'Superadmin Amikom',
             'email'    => 'admin@amikom.ac.id',
             'password' => bcrypt('password'),
-            'role'     => 'admin',
+            'role'     => 'superadmin',
         ]);
 
-        // 2. Kategori
+        // 2. Akun Penyelenggara (Organizer / Tenant)
+        $organizer = \App\Models\User::create([
+            'name'     => 'HIMA Amikom',
+            'email'    => 'hima@amikom.ac.id',
+            'password' => bcrypt('password'),
+            'role'     => 'organizer',
+        ]);
+
+        // 3. Kategori
         $cat1 = \App\Models\Category::create(['name' => 'Seminar IT',    'slug' => 'seminar-it']);
         $cat2 = \App\Models\Category::create(['name' => 'Entertainment', 'slug' => 'entertainment']);
         $cat3 = \App\Models\Category::create(['name' => 'Workshop',      'slug' => 'workshop']);
 
-        // 3. Events
+        // 4. Events (Semua event ini sekarang dimiliki oleh akun HIMA)
         \App\Models\Event::create([
+            'organizer_id' => $organizer->id,
             'category_id' => $cat2->id,
             'name'        => 'Jazz Night 2026',
             'description' => 'Nikmati malam yang indah dengan alunan musik jazz yang merdu.',
@@ -34,6 +43,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \App\Models\Event::create([
+            'organizer_id' => $organizer->id,
             'category_id' => $cat1->id,
             'name'        => 'Hackathon - Unleash Your Inner Developer',
             'description' => 'Ayo asah skill coding kamu dan ciptakan solusi inovatif!',
@@ -45,6 +55,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \App\Models\Event::create([
+            'organizer_id' => $organizer->id,
             'category_id' => $cat1->id,
             'name'        => 'AI & Future Tech Summit 2026',
             'description' => 'Jelajahi tren terkini dalam AI dan teknologi masa depan.',
@@ -56,6 +67,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \App\Models\Event::create([
+            'organizer_id' => $organizer->id,
             'category_id' => $cat3->id,
             'name'        => 'UI/UX Masterclass 2026',
             'description' => 'Pelajari desain antarmuka modern dari para praktisi industri.',
@@ -67,6 +79,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \App\Models\Event::create([
+            'organizer_id' => $organizer->id,
             'category_id' => $cat2->id,
             'name'        => 'E-Sport U-Champ 2026',
             'description' => 'Turnamen e-sport antar universitas se-DIY.',
@@ -78,6 +91,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \App\Models\Event::create([
+            'organizer_id' => $organizer->id,
             'category_id' => $cat3->id,
             'name'        => 'Laravel Workshop: Build REST API',
             'description' => 'Workshop membangun REST API dengan Laravel dari nol.',

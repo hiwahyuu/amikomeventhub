@@ -147,6 +147,82 @@
 
                 </div>
             </div>
+
+            <!-- ========================================== -->
+            <!-- FITUR UAS: RATING & REVIEW (TAMPILAN) -->
+            <!-- ========================================== -->
+            <div class="mt-16 pt-10 border-t border-slate-200">
+                <h3 class="text-2xl font-black text-slate-800 mb-8">Ulasan & Penilaian Acara</h3>
+
+                <!-- Menampilkan Pesan Sukses -->
+                @if(session('success'))
+                    <div class="bg-emerald-100 border border-emerald-400 text-emerald-700 px-6 py-4 rounded-2xl relative mb-8 font-bold flex items-center gap-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <!-- Form Tambah Ulasan -->
+                @auth
+                    <form action="{{ route('reviews.store', $event->id) }}" method="POST" class="mb-12 bg-slate-50 p-8 rounded-3xl border border-slate-100">
+                        @csrf
+                        <div class="mb-6">
+                            <label for="rating" class="block font-bold text-slate-700 mb-3">Berikan Rating:</label>
+                            <select name="rating" id="rating" class="border border-slate-300 p-4 rounded-xl w-full md:w-1/2 focus:ring-indigo-500 focus:border-indigo-500 font-medium" required>
+                                <option value="" disabled selected>-- Pilih Bintang --</option>
+                                <option value="5">⭐⭐⭐⭐⭐ (5/5) - Luar Biasa!</option>
+                                <option value="4">⭐⭐⭐⭐ (4/5) - Sangat Bagus</option>
+                                <option value="3">⭐⭐⭐ (3/5) - Bagus</option>
+                                <option value="2">⭐⭐ (2/5) - Kurang Memuaskan</option>
+                                <option value="1">⭐ (1/5) - Mengecewakan</option>
+                            </select>
+                        </div>
+                        <div class="mb-6">
+                            <label for="comment" class="block font-bold text-slate-700 mb-3">Tulis Ulasan (Opsional):</label>
+                            <textarea name="comment" id="comment" rows="4" class="border border-slate-300 p-4 rounded-xl w-full focus:ring-indigo-500 focus:border-indigo-500 font-medium" placeholder="Bagaimana pengalaman Anda dengan acara ini?"></textarea>
+                        </div>
+                        <button type="submit" class="bg-indigo-600 text-white font-bold px-8 py-3.5 rounded-xl hover:bg-indigo-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-200">
+                            Kirim Ulasan
+                        </button>
+                    </form>
+                @else
+                    <div class="mb-12 bg-indigo-50 border-l-4 border-indigo-500 p-6 text-indigo-800 rounded-r-2xl flex items-center gap-4">
+                        <svg class="w-8 h-8 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p class="font-medium text-lg">Silakan <a href="{{ route('google.login') }}" class="font-black underline hover:text-indigo-600">Login dengan Google</a> terlebih dahulu untuk memberikan ulasan pada acara ini.</p>
+                    </div>
+                @endauth
+
+                <!-- Daftar Ulasan (Testimoni) -->
+                <div class="space-y-6">
+                    @forelse($event->reviews()->latest()->get() as $review)
+                        <div class="bg-white p-6 border border-slate-100 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-black text-lg">
+                                        {{ strtoupper(substr($review->user->name, 0, 1)) }}
+                                    </div>
+                                    <span class="font-bold text-lg text-slate-800">{{ $review->user->name }}</span>
+                                </div>
+                                <span class="text-amber-400 tracking-widest text-lg">
+                                    {{ str_repeat('⭐', $review->rating) }}
+                                </span>
+                            </div>
+                            <p class="text-slate-600 mt-2 ml-16 font-medium leading-relaxed">{{ $review->comment ?? 'Penonton ini tidak meninggalkan komentar.' }}</p>
+                            <small class="text-slate-400 mt-3 block ml-16 font-medium">{{ $review->created_at->diffForHumans() }}</small>
+                        </div>
+                    @empty
+                        <div class="text-center py-16 bg-slate-50 rounded-3xl border border-dashed border-slate-300">
+                            <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                            <p class="text-slate-500 font-bold text-lg">Belum ada ulasan untuk acara ini.</p>
+                            <p class="text-slate-400 mt-1">Jadilah yang pertama memberikan ulasan!</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+            <!-- ========================================== -->
+
         </div>
     </div>
 </div>

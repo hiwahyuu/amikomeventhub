@@ -107,7 +107,8 @@
                     </div>
                     @endif
 
-                    <input type="file" name="image" accept="image/*" id="imageInput"
+                    {{-- PERBAIKAN: name="image" diubah menjadi name="poster_path" --}}
+                    <input type="file" name="poster_path" accept="image/*" id="imageInput"
                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm text-gray-500
                                   file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                     <p class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengganti poster. Format: JPG, PNG (maks. 2MB)</p>

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\Category; 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,7 +12,16 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::with('category')->latest()->get();
+        // LOGIKA MULTI-TENANT: Superadmin lihat semua, Organizer lihat miliknya sendiri
+        if (auth()->user()->role === 'superadmin') {
+            $events = Event::with(['category', 'organizer'])->latest()->get();
+        } else {
+            $events = Event::with('category')
+                           ->where('organizer_id', auth()->id())
+                           ->latest()
+                           ->get();
+        }
+        
         return view('admin.events.index', compact('events'));
     }
 
@@ -24,56 +33,77 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'category_id' => 'required',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'date' => 'required|date',
+            'location' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'capacity' => 'required|integer|min:1',
+            'poster_path' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Otomatis masukkan ID pembuat (Penyelenggara)
+        $validated['organizer_id'] = auth()->id();
+
+        if ($request->hasFile('poster_path')) {
+            $validated['poster_path'] = $request->file('poster_path')->store('posters', 'public');
+        }
+
+        Event::create($validated);
+        return redirect()->route('admin.events.index')->with('success', 'Event berhasil ditambahkan');
     }
 
     public function edit(Event $event)
     {
+        // Keamanan tambahan: Pastikan organizer tidak bisa edit event orang lain
+        if (auth()->user()->role !== 'superadmin' && $event->organizer_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses ke event ini.');
+        }
+
         $categories = Category::all();
         return view('admin.events.edit', compact('event', 'categories'));
     }
 
-        public function update(Request $request, Event $event)
+    public function update(Request $request, Event $event)
     {
-        // 1. Validasi input
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required',
-            'price' => 'required|numeric',
-            'date' => 'required',
-            'capacity' => 'required|integer',
-            'location' => 'required|string',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
-        ]);
-
-        // 2. Ambil semua input kecuali token, method, dan image
-        $data = $request->except(['_token', '_method', 'image']);
-
-        // 3. Logika Update Gambar
-        if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($event->poster_path && Storage::disk('public')->exists($event->poster_path)) {
-                Storage::disk('public')->delete($event->poster_path);
-            }
-            
-            // Simpan gambar baru ke folder 'posters' di storage/app/public/posters
-            $path = $request->file('image')->store('posters', 'public');
-            
-            // Masukkan path ke dalam array data
-            $data['poster_path'] = $path;
+        if (auth()->user()->role !== 'superadmin' && $event->organizer_id !== auth()->id()) {
+            abort(403);
         }
 
-        // 4. Update data ke database
-        $event->update($data);
+        $validated = $request->validate([
+            'category_id' => 'required',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'date' => 'required|date',
+            'location' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'capacity' => 'required|integer|min:1',
+            'poster_path' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
 
-        // 5. Redirect dengan pesan sukses
-        return redirect()->route('admin.events.index')->with('success', 'Event berhasil diperbarui!');
+        if ($request->hasFile('poster_path')) {
+            if ($event->poster_path) {
+                Storage::disk('public')->delete($event->poster_path);
+            }
+            $validated['poster_path'] = $request->file('poster_path')->store('posters', 'public');
+        }
+
+        $event->update($validated);
+        return redirect()->route('admin.events.index')->with('success', 'Event berhasil diupdate');
     }
-
 
     public function destroy(Event $event)
     {
-        //
+        if (auth()->user()->role !== 'superadmin' && $event->organizer_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($event->poster_path) {
+            Storage::disk('public')->delete($event->poster_path);
+        }
+        $event->delete();
+        return redirect()->route('admin.events.index')->with('success', 'Event berhasil dihapus');
     }
 }

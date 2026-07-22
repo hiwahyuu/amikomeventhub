@@ -47,7 +47,7 @@
         <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm">
             <h2 class="text-indigo-600 italic underline font-bold mb-8">Data Pemesan</h2>
 
-            {{-- KOTAK ERROR: Akan muncul jika Midtrans menolak atau stok habis --}}
+            {{-- KOTAK ERROR: Akan muncul jika Midtrans menolak, stok habis, atau promo salah --}}
             @if(session('error'))
                 <div class="mb-6 p-4 bg-red-50 text-red-600 border border-red-200 rounded-xl font-bold text-sm">
                     ⚠️ {{ session('error') }}
@@ -87,7 +87,14 @@
                     </div>
                 </div>
                 
-                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-8">*E-Ticket akan dikirim ke email ini</p>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-6">*E-Ticket akan dikirim ke email ini</p>
+
+                {{-- KOTAK INPUT KODE PROMO BARU --}}
+                <div class="mb-8 p-5 bg-indigo-50 border border-indigo-100 rounded-2xl">
+                    <label class="block text-[10px] font-bold text-indigo-700 uppercase tracking-widest mb-2">Kode Promo (Opsional)</label>
+                    <input type="text" name="promo_code" placeholder="Masukkan kode promo jika ada..." value="{{ old('promo_code') }}"
+                           class="w-full px-4 py-3.5 rounded-xl border border-indigo-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition uppercase placeholder:normal-case">
+                </div>
 
                 <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all duration-300">
                     Lanjut Pembayaran
