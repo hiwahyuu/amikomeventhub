@@ -31,7 +31,7 @@ Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integ
 
 ---
 
-## ✅ Fitur Aplikasi (Lengkap + Update UAS)
+## ✅ Fitur Aplikasi (Lengkap UTS & Update UAS)
 
 | No | Modul | Fitur | Status |
 |----|-------|-------|--------|
@@ -39,15 +39,20 @@ Platform manajemen tiket event berbasis web menggunakan Laravel MVC dengan integ
 | 2 | Partner | CRUD lengkap + Search | ✅ Selesai |
 | 3 | Public View | Partner & Kategori tampil dinamis di homepage | ✅ Selesai |
 | 4 | Filter Data | Pemfilteran event berdasarkan kategori (UI/UX dinamis) | ✅ Selesai |
-| 5 | Authentication | Login & Logout Admin & Multi-Tenant Role | ✅ Selesai |
+| 5 | Authentication | Login & Logout Admin (Multi-Tenant Role) | ✅ Selesai |
 | 6 | SSO Google | Login instan menggunakan akun Google (Laravel Socialite) | ✅ Selesai 🔥 |
 | 7 | Middleware | Proteksi route admin & user | ✅ Selesai |
-| 8 | Checkout & Kupon | Sistem kode promo/kupon diskon & Bypass otomatis (Rp 0) | ✅ Selesai 🔥 |
-| 9 | Transaksi & Midtrans | Integrasi Pembayaran Midtrans (Snap Popup) + Webhook | ✅ Selesai |
-| 10 | Rating & Review | Sistem ulasan dan bintang interaktif oleh pembeli | ✅ Selesai 🔥 |
-| 11 | Manajemen Kuota | Pemotongan kuota & penambahan tiket terjual otomatis | ✅ Selesai |
-| 12 | Notifikasi Email | Pengiriman E-Ticket otomatis via email (Local Log Mode) | ✅ Selesai |
-| 13 | E-Certificate PDF | Cetak dan unduh sertifikat partisipasi instan berformat PDF | ✅ Selesai 🔥 |
+| 8 | Checkout | Guest checkout pemesanan tiket event | ✅ Selesai |
+| 9 | Kupon Diskon | Sistem kode promo/kupon diskon & Bypass otomatis (Rp 0) | ✅ Selesai 🔥 |
+| 10 | Transaksi | Laporan data transaksi lengkap di panel admin | ✅ Selesai |
+| 11 | Order ID | Generate kode unik transaksi format `TRX-xxx` | ✅ Selesai |
+| 12 | Payment Gateway | Integrasi Pembayaran Midtrans (Snap Popup) | ✅ Selesai |
+| 13 | State Handling | Penanganan status pembayaran (Success, Pending, Gagal) | ✅ Selesai |
+| 14 | Midtrans Webhook | Update status otomatis dari *background* via API Callback | ✅ Selesai |
+| 15 | Manajemen Kuota | Pemotongan kuota & penambahan tiket terjual otomatis | ✅ Selesai |
+| 16 | Rating & Review | Sistem ulasan dan rating bintang interaktif oleh pembeli | ✅ Selesai 🔥 |
+| 17 | Notifikasi Email | Pengiriman E-Ticket otomatis via email (Local Log Mode) | ✅ Selesai |
+| 18 | E-Certificate PDF | Cetak dan unduh sertifikat partisipasi instan berformat PDF | ✅ Selesai 🔥 |
 
 ---
 
